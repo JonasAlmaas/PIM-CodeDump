@@ -28,27 +28,33 @@ fourcc = cv2.VideoWriter_fourcc("M", "J", "P", "G")
 cap = cv2.VideoCapture()
 cap.open(1 + cv2.CAP_DSHOW)
 cap.set(cv2.CAP_PROP_FOURCC, fourcc)
-# Focus
-cap.set(28, 0)
-# Keep at 0.25 to disable auto_exposure. 0.75 is enabled
-cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
-cap.set(cv2.CAP_PROP_EXPOSURE, -3)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
 cap.set(cv2.CAP_PROP_FPS, 30)
 
+# Camera settings
+cap.set(cv2.CAP_PROP_FOCUS, 15)
+# Keep at 0.25 to disable auto_exposure. 0.75 is enabled
+cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
+cap.set(cv2.CAP_PROP_EXPOSURE, -4)
+cap.set(cv2.CAP_PROP_CONTRAST, 0)
+cap.set(cv2.CAP_PROP_HUE, 0)
+cap.set(cv2.CAP_PROP_SATURATION, 0)
+cap.set(cv2.CAP_PROP_BRIGHTNESS, 0)
+
 qr_codes = []
 
 TUNING_CAMERA = False
+# TUNING_CAMERA = True
+
 
 def do_the_camera_stuff():
     rval, frame = cap.read()
 
     if rval:
         original_source_image = cv2.cvtColor(frame, 1)
-        
         original_source_image = cv2.cvtColor(original_source_image, cv2.COLOR_BGR2GRAY)
-        original_source_image = cv2.inRange(original_source_image, 90, 210)
+        original_source_image = cv2.inRange(original_source_image, 41, 255)
         original_source_image = cv2.cvtColor(original_source_image, cv2.COLOR_RGB2RGBA)
     else:
         original_source_image = np.zeros((1,1), np.uint16)
@@ -78,7 +84,6 @@ def do_the_camera_stuff():
         qr_codes.append(barcodeData)
 
     displayed_image = cv2.resize(original_source_image, (int(resolution[0] / 3.5), int(resolution[1] / 3.5)))
-    # displayed_image = cv2.resize(original_source_image, (640, 480))
     cv2.imshow("Preview", displayed_image)
     cv2.waitKey(1)
 
