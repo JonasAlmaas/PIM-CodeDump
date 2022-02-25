@@ -2,6 +2,9 @@ import os
 import cv2
 import numpy as np
 
+
+GREYSCALE = False
+
 ret = np.load(os.path.join(os.path.dirname(__file__), "brio_camera_calibration/ret.npy"))
 mtx = np.load(os.path.join(os.path.dirname(__file__), "brio_camera_calibration/mtx.npy"))
 dist = np.load(os.path.join(os.path.dirname(__file__), "brio_camera_calibration/dist.npy"))
@@ -36,8 +39,10 @@ cv2.setTrackbarMin('Contrast', "Sliders", -255)
 cv2.createTrackbar('Hue', "Sliders", 0, 180, empty)
 cv2.createTrackbar('Saturation', "Sliders", 0, 255, empty)
 cv2.createTrackbar('Brightness', "Sliders", 0, 255, empty)
-cv2.createTrackbar('RangeLow', "Sliders", 41, 255, empty)
-cv2.createTrackbar('RangeHigh', "Sliders", 255, 255, empty)
+
+if GREYSCALE:
+    cv2.createTrackbar('RangeLow', "Sliders", 41, 255, empty)
+    cv2.createTrackbar('RangeHigh', "Sliders", 255, 255, empty)
 
 while True:
     focus = cv2.getTrackbarPos("Focus", "Sliders")
@@ -58,13 +63,12 @@ while True:
 
     if rval:
         original_source_image = cv2.cvtColor(frame, 1)
-        original_source_image = cv2.cvtColor(original_source_image, cv2.COLOR_BGR2GRAY)
-
-        range_low = cv2.getTrackbarPos("RangeLow", "Sliders")
-        range_high = cv2.getTrackbarPos("RangeHigh", "Sliders")
-
-        original_source_image = cv2.inRange(original_source_image, range_low, range_high)
-        original_source_image = cv2.cvtColor(original_source_image, cv2.COLOR_RGB2RGBA)
+        if GREYSCALE:
+            original_source_image = cv2.cvtColor(original_source_image, cv2.COLOR_BGR2GRAY)
+            range_low = cv2.getTrackbarPos("RangeLow", "Sliders")
+            range_high = cv2.getTrackbarPos("RangeHigh", "Sliders")
+            original_source_image = cv2.inRange(original_source_image, range_low, range_high)
+            original_source_image = cv2.cvtColor(original_source_image, cv2.COLOR_RGB2RGBA)
     else:
         original_source_image = np.zeros((1,1), np.uint16)
     
